@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Test</title>
+</head>
+<body>
+  <h1>WebSocket Test</h1>
+  <button id="connectBtn">Connect to WebSocket</button>
+  <button id="sendBtn" disabled>Send Message</button>
+  <div id="messages"></div>
+
+  <script>
+    let ws;
+
+    document.getElementById('connectBtn').addEventListener('click', () => {
+      // Ensure this matches the WebSocket server address and port
+      ws = new WebSocket('wss://localhost:8443');
+
+      ws.onopen = () => {
+        console.log('Connected to WebSocket server');
+        document.getElementById('messages').innerHTML += '<p>Connected to WebSocket server</p>';
+        document.getElementById('sendBtn').disabled = false;
+      };
+
+      ws.onmessage = (event) => {
+        console.log('Received:', event.data);
+        document.getElementById('messages').innerHTML += `<p>Received: ${event.data}</p>`;
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected from WebSocket server');
+        document.getElementById('messages').innerHTML += '<p>Disconnected from WebSocket server</p>';
+        document.getElementById('sendBtn').disabled = true;
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        document.getElementById('messages').innerHTML += `<p>WebSocket error: ${error}</p>`;
+      };
+    });
+
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const message = 'Hello Server';
+      console.log('Sending:', message);
+      ws.send(message);
+      document.getElementById('messages').innerHTML += `<p>Sent: ${message}</p>`;
+    });
+  </script>
+</body>
+</html>
