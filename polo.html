@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Event Listener</title>
+</head>
+<body>
+  <div id="events"></div>
+
+  <script>
+    let ws; // Declare WebSocket variable
+
+    // Function to create a new WebSocket connection
+    function createWebSocketConnection() {
+      ws = new WebSocket('wss://127.0.0.1:8080',['chat']);
+
+      // Event listener for when the connection is established
+      ws.onopen = () => {
+        console.log('WebSocket connection established');
+      };
+
+      // Event listener for incoming messages
+      ws.onmessage = (event) => {
+        const message = event.data;
+        if (message instanceof Blob) {
+          // If message is a Blob, read its content
+          readBlobAsText(message, displayMessage);
+        } else {
+          displayMessage(message); // Display the received message
+        }
+      };
+
+      // Event listener for when the connection is closed
+      ws.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+
+      // Event listener for WebSocket errors
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    }
+
+    // Function to display a new message
+    function displayMessage(message) {
+      const eventsDiv = document.getElementById('events');
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message; // Display the received message
+      eventsDiv.appendChild(messageElement);
+    }
+
+    // Function to read Blob as text
+    function readBlobAsText(blob, callback) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const text = event.target.result;
+        callback(text);
+      };
+      reader.readAsText(blob);
+    }
+
+    // Create a WebSocket connection when the page loads
+    window.onload = () => {
+      createWebSocketConnection();
+    };
+  </script>
+</body>
+</html>

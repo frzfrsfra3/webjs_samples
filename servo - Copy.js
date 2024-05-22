@@ -12,6 +12,6 @@ app.use(express.static(__dirname)); // Serve the current directory
 
 const server = https.createServer(options, app);
 
-server.listen(8080, '127.0.0.1', () => {
+server.listen(8081, () => {
   console.log('Serving HTML client on https://localhost:8081');
 });
