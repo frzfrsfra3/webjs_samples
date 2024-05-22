@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "express": "^4.19.2",
     "expressjs": "^1.0.1",
     "https": "^1.0.0",
     "vuejs": "^3.0.1",
