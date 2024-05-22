@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client</title>
+</head>
+<body>
+  <div id="app">
+    <h1>WebSocket Client</h1>
+    <label>
+      Message:
+      <input v-model="message" @keyup.enter="sendMessage" placeholder="Type a message" />
+    </label>
+    <button @click="sendMessage">Send</button>
+    <ul>
+      <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
+    </ul>
+  </div>
+
+  <!-- Vue.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+  <!-- WebSocket Client JavaScript -->
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        ws: null,
+        message: '',
+        messages: [],
+		options: [{
+		'rejectUnauthorized': false, // Allow unauthorized
+          
+		  'ca': './server.crt'
+		
+		}
+		]
+      },
+      mounted() {
+        // WebSocket options
+        const options = {
+          rejectUnauthorized: false, // Allow unauthorized
+          ca: './server.crt' // Path to the crt file
+        };
+
+        // Establish WebSocket connection
+//        this.ws = new WebSocket('wss://localhost:8080', options);
+			 this.ws = new WebSocket('wss://127.0.0.1:8080',['chat', 'superchat'], this.options);
+        this.ws.onopen = () => {
+          console.log('Connected to WebSocket server');
+        };
+
+        this.ws.onmessage = (event) => {
+          this.messages.push(event.data);
+        };
+
+        this.ws.onclose = () => {
+          console.log('Disconnected from WebSocket server');
+        };
+      },
+      methods: {
+        sendMessage() {
+          if (this.message !== '') {
+            this.ws.send(this.message);
+            this.messages.push(`You: ${this.message}`);
+            this.message = '';
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
